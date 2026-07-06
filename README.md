@@ -1,7 +1,7 @@
 # 🏗️ FlowForge AI — Systems Architect Slack Agent
 
 <p align="center">
-  <img src="logo.png" alt="FlowForge AI Logo" width="200" height="200" />
+  <img src="logo.png?v=2" alt="FlowForge AI Logo" width="200" height="200" />
 </p>
 
 FlowForge AI is an agentic AI Systems Architect inside Slack. It allows teams to upload whiteboard sketches, notes, or system diagrams directly in Slack channels, translates them into structured digital Mermaid.js layouts, and lets you iteratively edit, audit, and analyze the architecture conversationally.
