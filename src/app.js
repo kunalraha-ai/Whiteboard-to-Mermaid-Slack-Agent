@@ -689,10 +689,27 @@ slackApp.action('action_select_theme', async ({ ack, body, client, respond }) =>
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. Server Start Handler
+// 4. Server Start & Health Check Handler
 // ─────────────────────────────────────────────────────────────────────────────
 (async () => {
+  // Start Bolt App (Socket Mode starts the WebSocket connection)
+  await slackApp.start();
+  console.log('⚡ FlowForge AI Socket Mode connection activated.');
+
+  // Start a lightweight HTTP server on process.env.PORT for Render health checks
+  const http = require('http');
   const port = process.env.PORT || 3000;
-  await slackApp.start(port);
-  console.log(`⚡ FlowForge AI is running on port ${port}! Socket Mode activated.`);
+  const server = http.createServer((req, res) => {
+    if (req.url === '/' || req.url === '/health') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('OK');
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not Found');
+    }
+  });
+
+  server.listen(port, () => {
+    console.log(`📡 Health check server listening on port ${port}`);
+  });
 })();
