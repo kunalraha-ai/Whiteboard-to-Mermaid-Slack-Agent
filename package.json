@@ -1,0 +1,33 @@
+{
+  "name": "flowforge-ai",
+  "version": "1.0.0",
+  "description": "FlowForge AI — AI Systems Architect inside Slack. Turns whiteboard photos into interactive Mermaid diagrams with architectural analysis.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "test": "node test/run-test.js",
+    "render:test": "node -e \"require('./src/renderer.js').renderMermaid('graph TD\\n  A-->B', './test-output.png').then(() => console.log('OK')).catch(console.error)\""
+  },
+  "keywords": [
+    "slack",
+    "mermaid",
+    "architecture",
+    "ai",
+    "diagram",
+    "whiteboard"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@slack/bolt": "^4.1.0",
+    "dotenv": "^16.4.5",
+    "openai": "^4.73.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
