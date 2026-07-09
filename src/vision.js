@@ -193,6 +193,8 @@ Rules:
 async function iterateDiagram({ currentMermaid, userMessage, imageBase64, threadHistory = [] }) {
   const systemPrompt = `You are FlowForge AI, a senior systems architect. Update the Mermaid diagram based on the user's request. Always return the complete updated Mermaid code block inside \`\`\`mermaid\`\`\` fences, followed by a brief changelog of what changed.
 
+Make sure every item in the changelog is returned as a bullet point starting with a bullet character (e.g. • or -).
+
 Current Mermaid diagram:
 \`\`\`mermaid
 ${currentMermaid}
@@ -264,8 +266,8 @@ Analyse the following Mermaid.js architecture diagram for security vulnerabiliti
 
 Return ONLY valid JSON:
 {
-  "vulnerabilities": ["<specific vulnerability descriptions>"],
-  "recommendations": ["<actionable remediation steps>"],
+  "vulnerabilities": ["<specific vulnerability descriptions (concise bullet-point items without leading bullet symbols)>"],
+  "recommendations": ["<actionable remediation steps (concise bullet-point items without leading bullet symbols)>"],
   "riskLevel": "<low | medium | high | critical>"
 }
 
@@ -326,7 +328,7 @@ Return ONLY valid JSON:
       "notes": "<sizing assumptions, instance types, etc.>"
     }
   ],
-  "assumptions": ["<key assumptions made during estimation>"]
+  "assumptions": ["<key assumptions made during estimation (concise bullet-point items without leading bullet symbols)>"]
 }
 
 Use current (2026) AWS pricing. Map each diagram component to the most
@@ -478,7 +480,7 @@ Generate comprehensive architecture documentation from the Mermaid.js diagram.
 
 Return ONLY valid JSON:
 {
-  "overview": "<2-3 paragraph high-level description of the system>",
+  "overview": "<a list of bullet points (each starting with a bullet character) describing the high-level system>",
   "components": [
     {
       "name": "<component name>",
@@ -486,8 +488,8 @@ Return ONLY valid JSON:
       "dependencies": ["<names of components it depends on>"]
     }
   ],
-  "failurePoints": "<description of single points of failure and failure modes>",
-  "scalingStrategy": "<recommended scaling strategy and considerations>"
+  "failurePoints": "<a list of bullet points (each starting with a bullet character) describing single points of failure and failure modes>",
+  "scalingStrategy": "<a list of bullet points (each starting with a bullet character) describing the recommended scaling strategy and considerations>"
 }
 
 Be thorough: cover data flows, integration patterns, resilience, and

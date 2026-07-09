@@ -17,7 +17,12 @@ const MAX_LIST_ITEMS = 15;
 function bulletList(items, max = MAX_LIST_ITEMS) {
   if (!items) return '';
   if (typeof items === 'string') {
-    return items.trim().startsWith('•') ? items : `• ${items}`;
+    if (items.includes('\n')) {
+      items = items.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+    } else {
+      const cleanStr = items.replace(/^[•\-\*\s]+/, '').trim();
+      return `• ${cleanStr}`;
+    }
   }
   if (!Array.isArray(items)) return '';
   if (items.length === 0) return '';
@@ -34,7 +39,9 @@ function bulletList(items, max = MAX_LIST_ITEMS) {
       }
       return `${nameStr}${respStr}${depStr}`;
     }
-    return `${i}`;
+    const itemStr = `${i}`;
+    const cleanItem = itemStr.replace(/^[•\-\*\s]+/, '').trim();
+    return cleanItem;
   }).map((i) => `• ${i}`);
 
   if (items.length > max) {
@@ -382,7 +389,7 @@ function buildDocumentationCard({
   blocks.push(header('📄 Architecture Documentation'));
 
   // Overview
-  blocks.push(section(`*Overview*\n${overview || '_No overview provided._'}`));
+  blocks.push(section(`*Overview*\n${overview ? bulletList(overview) : '_No overview provided._'}`));
 
   blocks.push(divider);
 
@@ -407,7 +414,7 @@ function buildDocumentationCard({
   // Scaling strategy
   blocks.push(
     section(
-      `*Scaling Strategy*\n${scalingStrategy || '_No scaling strategy defined._'}`,
+      `*Scaling Strategy*\n${scalingStrategy ? bulletList(scalingStrategy) : '_No scaling strategy defined._'}`,
     ),
   );
 
