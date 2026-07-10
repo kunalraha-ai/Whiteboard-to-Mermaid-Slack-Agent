@@ -183,9 +183,59 @@ async function runTests() {
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // Test 6 [INTEGRATION TEST]: Real Slack MCP Round-Trip
+  // Test 6: PDF Documentation Generator
   // ─────────────────────────────────────────────────────────────────────────────
-  console.log('\n--- Test 6 [INTEGRATION TEST]: Slack MCP Server Round-Trip ---');
+  console.log('\n--- Test 6: PDF Documentation Generator ---');
+  const testPdfPath = path.join(__dirname, 'test-docs-output.pdf');
+  const dummyPngPath = path.join(__dirname, 'dummy-test.png');
+  
+  if (fs.existsSync(testPdfPath)) {
+    fs.unlinkSync(testPdfPath);
+  }
+  if (!fs.existsSync(dummyPngPath)) {
+    const base64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    fs.writeFileSync(dummyPngPath, Buffer.from(base64Png, 'base64'));
+  }
+
+  try {
+    const { generatePdfDocumentation } = require('../src/pdf');
+    const mockDocs = {
+      overview: 'System overview text describing the backend architecture.\n• Second point here.\n• Third point here.',
+      components: [
+        { name: 'Gateway', responsibility: 'Proxying API traffic', dependencies: ['Auth Service'] },
+        { name: 'Auth Service', responsibility: 'Validating tokens', dependencies: [] }
+      ],
+      failurePoints: 'Single point of failure at DB.\n• Secondary point here.',
+      scalingStrategy: 'Use auto-scaling groups for instances.'
+    };
+
+    await generatePdfDocumentation({
+      docs: mockDocs,
+      pngPath: dummyPngPath,
+      pdfPath: testPdfPath
+    });
+
+    assert(fs.existsSync(testPdfPath), `PDF file successfully written to ${testPdfPath}`);
+    
+    const stats = fs.statSync(testPdfPath);
+    assert(stats.size > 1000, `Generated PDF file has realistic content size (${stats.size} bytes)`);
+
+    // Clean up
+    if (fs.existsSync(testPdfPath)) {
+      fs.unlinkSync(testPdfPath);
+    }
+    if (fs.existsSync(dummyPngPath)) {
+      fs.unlinkSync(dummyPngPath);
+    }
+  } catch (error) {
+    console.error('  ❌ PDF generator test error:', error);
+    failed++;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Test 7 [INTEGRATION TEST]: Real Slack MCP Round-Trip
+  // ─────────────────────────────────────────────────────────────────────────────
+  console.log('\n--- Test 7 [INTEGRATION TEST]: Slack MCP Server Round-Trip ---');
   try {
     const start = Date.now();
     // Test a real round-trip call to the local MCP server process using tools/list

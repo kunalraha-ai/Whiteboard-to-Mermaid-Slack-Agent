@@ -448,27 +448,59 @@ async function handleGenerateDocsAction({ body, client, respond }) {
   if (!mermaid) return;
 
   await respond({
-    text: '📄 Writing detailed system architecture documentation...',
+    text: '📄 Writing detailed system architecture documentation and compiling PDF...',
     response_type: 'in_channel',
     replace_original: false,
     thread_ts: body.message.thread_ts || body.message.ts
   });
 
+  const tempPngPath = generateTempPath();
+  const tempPdfPath = tempPngPath.replace('.png', '.pdf');
+
   try {
+    // 1. Fetch JSON documentation details
     const docs = await generateDocumentation(mermaid);
-    const card = buildDocumentationCard(docs);
+
+    // 2. Render diagram PNG with the user's selected theme
+    const renderResult = await renderMermaid(mermaid, tempPngPath);
+    if (!renderResult.success) {
+      throw new Error(`Rendering layout for PDF failed: ${renderResult.error}`);
+    }
+
+    // 3. Compile PDF document
+    const { generatePdfDocumentation } = require('./pdf');
+    await generatePdfDocumentation({ docs, pngPath: tempPngPath, pdfPath: tempPdfPath });
+
+    // 4. Upload PDF to Slack
+    await client.files.uploadV2({
+      channel_id: body.channel.id,
+      thread_ts: body.message.thread_ts || body.message.ts,
+      file: fs.readFileSync(tempPdfPath),
+      filename: 'System_Architecture_Documentation.pdf',
+      title: 'System Architecture Documentation'
+    });
+
+    // 5. Post confirmation message
     await client.chat.postMessage({
       channel: body.channel.id,
       thread_ts: body.message.thread_ts || body.message.ts,
-      text: '📄 System Architecture Documentation',
-      blocks: card
+      text: '📄 *Documentation PDF compiled and uploaded successfully!* Click the file above to open it natively inside Slack.'
     });
+
   } catch (err) {
     await respond({
-      text: `❌ Docs generation failed: ${err.message}`,
+      text: `❌ PDF Docs generation failed: ${err.message}`,
       response_type: 'in_channel',
       replace_original: false
     });
+  } finally {
+    // Clean up temporary files
+    if (fs.existsSync(tempPngPath)) {
+      try { fs.unlinkSync(tempPngPath); } catch {}
+    }
+    if (fs.existsSync(tempPdfPath)) {
+      try { fs.unlinkSync(tempPdfPath); } catch {}
+    }
   }
 }
 
