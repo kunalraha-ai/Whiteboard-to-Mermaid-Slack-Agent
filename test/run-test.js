@@ -187,14 +187,9 @@ async function runTests() {
   // ─────────────────────────────────────────────────────────────────────────────
   console.log('\n--- Test 6: PDF Documentation Generator ---');
   const testPdfPath = path.join(__dirname, 'test-docs-output.pdf');
-  const dummyPngPath = path.join(__dirname, 'dummy-test.png');
   
   if (fs.existsSync(testPdfPath)) {
     fs.unlinkSync(testPdfPath);
-  }
-  if (!fs.existsSync(dummyPngPath)) {
-    const base64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
-    fs.writeFileSync(dummyPngPath, Buffer.from(base64Png, 'base64'));
   }
 
   try {
@@ -211,7 +206,6 @@ async function runTests() {
 
     await generatePdfDocumentation({
       docs: mockDocs,
-      pngPath: dummyPngPath,
       pdfPath: testPdfPath
     });
 
@@ -223,9 +217,6 @@ async function runTests() {
     // Clean up
     if (fs.existsSync(testPdfPath)) {
       fs.unlinkSync(testPdfPath);
-    }
-    if (fs.existsSync(dummyPngPath)) {
-      fs.unlinkSync(dummyPngPath);
     }
   } catch (error) {
     console.error('  ❌ PDF generator test error:', error);

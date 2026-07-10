@@ -454,24 +454,17 @@ async function handleGenerateDocsAction({ body, client, respond }) {
     thread_ts: body.message.thread_ts || body.message.ts
   });
 
-  const tempPngPath = generateTempPath();
-  const tempPdfPath = tempPngPath.replace('.png', '.pdf');
+  const tempPdfPath = generateTempPath().replace('.png', '.pdf');
 
   try {
     // 1. Fetch JSON documentation details
     const docs = await generateDocumentation(mermaid);
 
-    // 2. Render diagram PNG with the user's selected theme
-    const renderResult = await renderMermaid(mermaid, tempPngPath);
-    if (!renderResult.success) {
-      throw new Error(`Rendering layout for PDF failed: ${renderResult.error}`);
-    }
-
-    // 3. Compile PDF document
+    // 2. Compile PDF document
     const { generatePdfDocumentation } = require('./pdf');
-    await generatePdfDocumentation({ docs, pngPath: tempPngPath, pdfPath: tempPdfPath });
+    await generatePdfDocumentation({ docs, pdfPath: tempPdfPath });
 
-    // 4. Upload PDF to Slack
+    // 3. Upload PDF to Slack
     await client.files.uploadV2({
       channel_id: body.channel.id,
       thread_ts: body.message.thread_ts || body.message.ts,
@@ -480,7 +473,7 @@ async function handleGenerateDocsAction({ body, client, respond }) {
       title: 'System Architecture Documentation'
     });
 
-    // 5. Post confirmation message
+    // 4. Post confirmation message
     await client.chat.postMessage({
       channel: body.channel.id,
       thread_ts: body.message.thread_ts || body.message.ts,
@@ -494,10 +487,7 @@ async function handleGenerateDocsAction({ body, client, respond }) {
       replace_original: false
     });
   } finally {
-    // Clean up temporary files
-    if (fs.existsSync(tempPngPath)) {
-      try { fs.unlinkSync(tempPngPath); } catch {}
-    }
+    // Clean up temporary file
     if (fs.existsSync(tempPdfPath)) {
       try { fs.unlinkSync(tempPdfPath); } catch {}
     }
