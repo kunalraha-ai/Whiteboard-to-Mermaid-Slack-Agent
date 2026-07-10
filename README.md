@@ -74,9 +74,10 @@ graph TD
 
 * **Single-Pass Vision Pipeline:** Translates hand-drawn whiteboard photos into accurate, digital, and renderable Mermaid.js flowchart code in a single API call (optimized to under 20 seconds).
 * **Mermaid Chart Cloud Rendering:** Renders vector diagrams directly in the cloud using the official Mermaid Chart MCP server endpoint.
+* **PDF Documentation Generation:** Compiles a professional multi-page PDF document containing system overviews, component catalogs, resilience analysis, scaling strategies, and embeds the rendered diagram PNG. The PDF is uploaded directly to the Slack thread and can be opened natively in Slack's document viewer.
 * **Playground Edit Integration:** Adds an **"Open in Playground ↗"** button to let users open and edit diagrams interactively in their browser.
 * **Compact Dropdown UI:** Collapses utilities into two sleek dropdown selectors:
-  * **Tools:** Generate PlantUML, compile Sequence Diagrams, translate to AWS Architecture, run threat-model Security Reviews, compile Cost Estimates, or write System Documentation.
+  * **Tools:** Generate PlantUML, compile Sequence Diagrams, translate to AWS Architecture, run threat-model Security Reviews, compile Cost Estimates, or compile PDF Documentation.
   * **Color Themes:** Toggle styles instantly (`Sleek Dark 🌌`, `Classic Light ☀️`, `Forest Green 🌲`, `Hand-drawn Sketch ✏️`, and `Ocean Blue 🌊`).
 * **Conversational Thread Iterations:** Edit diagrams by typing replies in the thread (e.g. *"add a caching database and color it orange"*). The bot reads the thread history, revises the syntax, and uploads the new PNG.
 * **MCP Workspace Search:** Scopes Slack history for past architectural overlaps by querying the Slack MCP server using Slack's Real-Time Search (RTS) API.
